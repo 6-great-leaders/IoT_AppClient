@@ -26,6 +26,7 @@ struct ContentView: View {
                         Text("La scannette")
                     }
             }
+	    .accentColor(.green)
             .opacity(showSplashScreen ? 0 : 1)
             
             
