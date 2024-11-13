@@ -6,6 +6,8 @@ struct HomeView: View {
     @State private var selectedTags: [String] = []
     @State private var isLoading = false
     @State private var apiResponse: String? = nil // Holds the API response
+    @State private var peopleCount = 2
+    
 
     var body: some View {
         if isLoading {
@@ -36,6 +38,39 @@ struct HomeView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
                 .padding(.horizontal)
+            
+            // nombre de personnes
+            HStack {
+                Button(action: {
+                    if peopleCount > 1 { peopleCount -= 1 }
+                }) {
+                    Image(systemName: "minus")
+                        .padding()
+                        .frame(width: 40, height: 40)
+                        .background(Color(.systemGray5))
+                        .clipShape(Circle())
+                }
+                
+                Text("\(peopleCount) personnes")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.green)
+                
+                Button(action: {
+                    peopleCount += 1
+                }) {
+                    Image(systemName: "plus")
+                        .padding()
+                        .frame(width: 40, height: 40)
+                        .background(Color(.systemGray5))
+                        .clipShape(Circle())
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+            .background(Color(.systemGray6))
+            .cornerRadius(10)
+            .padding(.horizontal)
             
             Text("Pour quel budget ?")
                 .font(.headline)
@@ -76,6 +111,7 @@ struct HomeView: View {
         isLoading = true
         let payload: [String: Any] = [
             "recipe": recipe,
+            "people": Int(peopleCount),
             "budget": Int(budget),
             "tags": selectedTags
         ]
