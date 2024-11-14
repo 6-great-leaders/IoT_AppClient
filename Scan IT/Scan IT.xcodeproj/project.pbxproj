@@ -32,6 +32,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1D37B222CD907A500EB0774 /* Scan IT */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFolders = (
+				Fonts,
+			);
 			path = "Scan IT";
 			sourceTree = "<group>";
 		};

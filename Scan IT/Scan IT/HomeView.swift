@@ -1,5 +1,9 @@
 import SwiftUI
 
+extension Color {
+    static let customGreen = Color(red: 39/255, green: 194/255, blue: 120/255)
+}
+
 struct HomeView: View {
     @State private var recipe: String = ""
     @State private var budget: Double = 50
@@ -11,7 +15,7 @@ struct HomeView: View {
 
     var body: some View {
         if isLoading {
-            LoadingView()
+            LoadingViewView(recipe: recipe)
         } else if let response = apiResponse {
             ResultView(response: response)
         } else {
@@ -22,15 +26,14 @@ struct HomeView: View {
     var mainContent: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Que voulez-vous cuisiner ?")
-                .font(.headline)
+                .font(.system(size: 24, weight: .semibold))
                 .padding(.horizontal)
             
-            if recipe.isEmpty {
-                Text("Entrez le plat pour lequel vous voulez générer votre liste de courses")
-                    .foregroundColor(.gray)
-                    .padding(.top, 8)
-                    .padding(.leading, 5)
-            }
+            Text("Entrez le plat pour lequel vous voulez générer votre liste de courses")
+                .foregroundColor(.gray)
+                .padding(.top, 8)
+                .padding(.leading, 5)
+                .padding(.horizontal)
             
             TextEditor(text: $recipe)
                 .padding(4)
@@ -73,7 +76,7 @@ struct HomeView: View {
             .padding(.horizontal)
             
             Text("Pour quel budget ?")
-                .font(.headline)
+                .font(.system(size: 24, weight: .semibold))
                 .padding(.horizontal)
             
             HStack {
@@ -84,25 +87,39 @@ struct HomeView: View {
             .padding(.horizontal)
             
             Text("Des besoin particuliers ?")
-                .font(.headline)
+                .font(.system(size: 24, weight: .semibold))
                 .padding(.horizontal)
             
             TagView(tags: ["SANS NITRITE", "BIO", "SANS GLUTEN", "ANTI-GASPI", "AVEC PROMO", "PROCHE", "PAS CHER", "SANS CONSERVATEURS"], selectedTags: $selectedTags)
                 .padding(.horizontal)
             
-            Spacer()
             
+            
+
             Button(action: generateShoppingList) {
-                Text("Générer ma liste de courses")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.green)
-                    .cornerRadius(10)
+                HStack {
+                    Image("cierge-magique")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                    
+                    Text("Générer ma liste de courses")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.customGreen)
+                .cornerRadius(25)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 25)
+                        .stroke(Color.customGreen.opacity(0.3), lineWidth: 10)
+                )
             }
             .padding(.horizontal)
             .padding(.bottom, 20)
+
+
         }
         .background(Color.white)
     }
@@ -116,18 +133,15 @@ struct HomeView: View {
             "tags": selectedTags
         ]
         
-        // Here, create JSON body and send the request
         guard let url = URL(string: "http://localhost:3000/api/get_listes") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        // Encode JSON
         if let jsonData = try? JSONSerialization.data(withJSONObject: payload) {
             request.httpBody = jsonData
         }
         
-        // Perform the request
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 if let data = data, let responseString = String(data: data, encoding: .utf8) {
@@ -175,7 +189,54 @@ struct TagView: View {
     }
 }
 
-struct LoadingView: View {
+struct LoadingViewView: View {
+    @State private var isAnimating = false
+    @State private var loadingMessage = "Génération en cours..."
+    var recipe: String
+    
+    var body: some View {
+        VStack {
+            Text(recipe)
+                .font(.headline)
+                .foregroundColor(.black)
+                .padding(.top, 20)
+                .multilineTextAlignment(.center)
+            
+            Spacer()
+            
+            ZStack {
+                Circle()
+                    .stroke(Color.green.opacity(0.3), lineWidth: 8)
+                    .frame(width: 80, height: 80)
+                
+                Circle()
+                    .trim(from: 0, to: 0.7)
+                    .stroke(Color.customGreen, lineWidth: 8)
+                    .frame(width: 80, height: 80)
+                    .rotationEffect(Angle(degrees: isAnimating ? 360 : 0))
+                    .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isAnimating)
+                    .onAppear { isAnimating = true }
+                
+                Image("cierge-magique-vert")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+            }
+            .padding(.bottom, 20)
+            
+            Text(loadingMessage)
+                .font(.system(size: 16))
+                .foregroundColor(Color.customGreen)
+            
+            Spacer()
+        }
+        .background(Color.white)
+        .edgesIgnoringSafeArea(.all)
+    }
+}
+
+
+struct blbll: View {
     @State private var loadingMessage = "Merci de patienter, nous sommes entrain de générer un liste de course compatible avec tous vos paramètres"
     @State private var timer: Timer? = nil
     
