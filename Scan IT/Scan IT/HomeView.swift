@@ -5,7 +5,7 @@ extension Color {
 }
 
 struct HomeView: View {
-    @State private var recipe: String = ""
+    @State public var _recipe: String = ""
     @State private var budget: Double = 50
     @State private var selectedTags: [String] = []
     @State private var isLoading = false
@@ -15,7 +15,7 @@ struct HomeView: View {
 
     var body: some View {
         if isLoading {
-            LoadingViewView(recipe: recipe)
+            LoadingViewView(recipe: _recipe)
         } else if let response = apiResponse {
             ResultView(response: response)
         } else {
@@ -35,7 +35,7 @@ struct HomeView: View {
                 .padding(.leading, 5)
                 .padding(.horizontal)
             
-            TextEditor(text: $recipe)
+            TextEditor(text: $_recipe)
                 .padding(4)
                 .frame(height: 120)
                 .background(Color(.systemGray6))
@@ -127,7 +127,7 @@ struct HomeView: View {
     func generateShoppingList() {
         isLoading = true
         let payload: [String: Any] = [
-            "recipe": recipe,
+            "recipe": _recipe,
             "people": Int(peopleCount),
             "budget": Int(budget),
             "tags": selectedTags
@@ -190,19 +190,21 @@ struct TagView: View {
 }
 
 struct LoadingViewView: View {
+    var recipe: String = "Texte par défaut"
     @State private var isAnimating = false
-    @State private var loadingMessage = "Génération en cours..."
-    var recipe: String
-    
+
+
     var body: some View {
         VStack {
-            Text(recipe)
-                .font(.headline)
-                .foregroundColor(.black)
-                .padding(.top, 20)
-                .multilineTextAlignment(.center)
-            
+
             Spacer()
+            
+            Text(recipe)
+                .foregroundColor(.black)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 60)
+            
             
             ZStack {
                 Circle()
@@ -224,19 +226,18 @@ struct LoadingViewView: View {
             }
             .padding(.bottom, 20)
             
-            Text(loadingMessage)
+            Text("Génération en cours...")
                 .font(.system(size: 16))
                 .foregroundColor(Color.customGreen)
             
             Spacer()
         }
         .background(Color.white)
-        .edgesIgnoringSafeArea(.all)
     }
 }
 
 
-struct blbll: View {
+struct LoadingViewMat: View {
     @State private var loadingMessage = "Merci de patienter, nous sommes entrain de générer un liste de course compatible avec tous vos paramètres"
     @State private var timer: Timer? = nil
     

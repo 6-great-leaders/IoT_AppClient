@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreImage.CIFilterBuiltins
 
 struct ContentView: View {
     @State private var showSplashScreen = true // State variable to control the splash screen visibility
@@ -65,10 +66,46 @@ struct SplashScreen: View {
     }
 }
 
-// Placeholder for ScanView screen
+
 struct ScanView: View {
+    let urlString = "https://www.google.fr/"
+    let context = CIContext()
+    let filter = CIFilter.qrCodeGenerator()
+
     var body: some View {
-        Text("La scannette")
-            .font(.largeTitle)
+        VStack {
+            Spacer()
+
+            Text("QR CODE")
+                .font(.headline)
+                .foregroundColor(.black)
+                .padding(.bottom, 20)
+
+            if let qrCodeImage = generateQRCode(from: urlString) {
+                Image(uiImage: qrCodeImage)
+                    .resizable()
+                    .interpolation(.none)
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+            } else {
+                Text("Impossible de générer le QR code")
+                    .foregroundColor(.red)
+            }
+
+            Spacer()
+        }
+        .background(Color.white)
+        .edgesIgnoringSafeArea(.all)
+    }
+
+    func generateQRCode(from string: String) -> UIImage? {
+        filter.message = Data(string.utf8)
+
+        if let outputImage = filter.outputImage {
+            if let cgImage = context.createCGImage(outputImage, from: outputImage.extent) {
+                return UIImage(cgImage: cgImage)
+            }
+        }
+        return nil
     }
 }
