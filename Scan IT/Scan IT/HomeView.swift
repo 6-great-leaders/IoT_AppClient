@@ -45,35 +45,39 @@ struct HomeView: View {
             // nombre de personnes
             HStack {
                 Button(action: {
-                    if peopleCount > 1 { peopleCount -= 1 }
+                    if peopleCount > 1 {
+                        peopleCount -= 1
+                    }
                 }) {
                     Image(systemName: "minus")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(peopleCount > 1 ? .white : .gray)
                         .padding()
                         .frame(width: 40, height: 40)
-                        .background(Color(.systemGray5))
+                        .background(peopleCount > 1 ? Color.customGreen : Color(.systemGray5))
                         .clipShape(Circle())
                 }
+                .disabled(peopleCount <= 1)
                 
-                Text("\(peopleCount) personnes")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.green)
+                Text(peopleCount == 1 ? "1 personne" : "\(peopleCount) personnes")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.gray)
                 
                 Button(action: {
                     peopleCount += 1
                 }) {
                     Image(systemName: "plus")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
                         .padding()
                         .frame(width: 40, height: 40)
-                        .background(Color(.systemGray5))
+                        .background(Color.customGreen)
                         .clipShape(Circle())
                 }
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal)
             .padding(.vertical, 10)
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
-            .padding(.horizontal)
             
             Text("Pour quel budget ?")
                 .font(.system(size: 24, weight: .semibold))
