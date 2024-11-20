@@ -94,7 +94,7 @@ struct ScanView: View {
 
             Spacer()
         }
-        .background(Color.white)
+        .background(Color(.systemGray6))
         .edgesIgnoringSafeArea(.all)
     }
 

@@ -11,13 +11,14 @@ struct HomeView: View {
     @State private var isLoading = false
     @State private var apiResponse: String? = nil // Holds the API response
     @State private var peopleCount = 2
+    @State private var products: [Product] = []
     
 
     var body: some View {
         if isLoading {
             LoadingViewView(recipe: _recipe)
-        } else if let response = apiResponse {
-            ResultView(response: response)
+        } else if !products.isEmpty {
+            ShoppingListView(products: products)
         } else {
             mainContent
         }
@@ -122,10 +123,7 @@ struct HomeView: View {
             }
             .padding(.horizontal)
             .padding(.bottom, 20)
-
-
-        }
-        .background(Color.white)
+        }.navigationBarBackButtonHidden(true)
     }
     
     func generateShoppingList() {
@@ -137,7 +135,7 @@ struct HomeView: View {
             "tags": selectedTags
         ]
         
-        guard let url = URL(string: "http://localhost:3000/api/get_listes") else { return }
+        guard let url = URL(string: "http://localhost:3000/api/shopping-list") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -147,13 +145,21 @@ struct HomeView: View {
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                    self.apiResponse = responseString
+            DispatchQueue.main.async {
+                if let data = data {
+                    do {
+                        let decoder = JSONDecoder()
+                        let products = try decoder.decode([Product].self, from: data)
+                        self.products = products // Decode and assign products
+                        self.isLoading = false
+                    } catch {
+                        print("Failed to decode JSON: \(error)")
+                        self.isLoading = false
+                    }
                 } else {
-                    self.apiResponse = "Erreur lors de la génération de la liste de courses."
+                    print("Failed to fetch data: \(error?.localizedDescription ?? "Unknown error")")
+                    self.isLoading = false
                 }
-                self.isLoading = false
             }
         }.resume()
     }
@@ -237,6 +243,7 @@ struct LoadingViewView: View {
             Spacer()
         }
         .background(Color.white)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -278,19 +285,6 @@ struct LoadingViewMat: View {
                 loadingMessage = "Merci de patienter, nous sommes entrain de générer un liste de course compatible avec tous vos paramètres"
             }
         }
-    }
-}
-
-struct ResultView: View {
-    let response: String
-    
-    var body: some View {
-        ScrollView {
-            Text(response)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .navigationBarTitle("Résultat", displayMode: .inline)
     }
 }
 
