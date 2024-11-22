@@ -72,7 +72,7 @@ struct ShoppingListView: View {
                                         Image(systemName: "plus.circle.fill")
                                             .resizable()
                                             .frame(width: 30, height: 30)
-                                            .foregroundColor(.green)
+                                            .foregroundColor(Color.customGreen)
                                     }
                                 }
                             }
@@ -91,7 +91,7 @@ struct ShoppingListView: View {
                         VStack(alignment: .leading) {
                             Text("TOTAL")
                                 .font(.headline)
-                                .foregroundColor(.green)
+                                .foregroundColor(Color.customGreen)
                             Text("\(calculateTotalCost()) €")
                                 .font(.title2)
                                 .bold()
@@ -106,11 +106,16 @@ struct ShoppingListView: View {
                                 .bold()
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.green)
+                                .background(Color.customGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(10)
+                                .cornerRadius(25)
                         }
                         .padding(.horizontal)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(Color.customGreen.opacity(0.3), lineWidth: 10)
+                                .padding(.horizontal)
+                        )
 
                         NavigationLink(destination: HomeView()) {
                             Text("Regenerer une liste")
@@ -119,7 +124,7 @@ struct ShoppingListView: View {
                                 .padding()
                                 .background(Color.white)
                                 .foregroundColor(.black)
-                                .cornerRadius(10)
+                                .cornerRadius(25)
                         }
                         .padding(.horizontal)
                     }
