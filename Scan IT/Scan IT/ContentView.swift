@@ -68,7 +68,7 @@ struct SplashScreen: View {
 
 
 struct ScanView: View {
-    let urlString = "https://www.google.fr/"
+    let urlString = "getArticlesScanner;1"
     let context = CIContext()
     let filter = CIFilter.qrCodeGenerator()
 
